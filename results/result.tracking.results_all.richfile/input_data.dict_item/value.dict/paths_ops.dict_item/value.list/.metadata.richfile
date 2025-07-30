@@ -1,0 +1,20 @@
+{
+    "elements": {
+        "0.json": {
+            "type": "str",
+            "library": "python",
+            "version": "3.12.11",
+            "index": 0
+        },
+        "1.json": {
+            "type": "str",
+            "library": "python",
+            "version": "3.12.11",
+            "index": 1
+        }
+    },
+    "type": "list",
+    "library": "python",
+    "version": "3.12.11",
+    "version_richfile": "0.5.3"
+}

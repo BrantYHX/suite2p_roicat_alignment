@@ -1,0 +1,20 @@
+{
+    "elements": {
+        "key.json": {
+            "type": "str",
+            "library": "python",
+            "version": "3.12.11",
+            "index": 0
+        },
+        "value.json": {
+            "type": "int",
+            "library": "python",
+            "version": "3.12.11",
+            "index": 1
+        }
+    },
+    "type": "dict_item",
+    "library": "python",
+    "version": "3.12.11",
+    "version_richfile": "0.5.3"
+}
