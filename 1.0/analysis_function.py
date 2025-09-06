@@ -9,7 +9,7 @@ import multiprocessing as mp
 import roicat.util
 import os
 
-def generate_aligned_FOV_images(dir_allOuterFolders, um_per_pixel, radius_in, z_threshold, CLAHE_grid_block_size, use_CLAHE, dir_save, save_path):
+def generate_aligned_FOV_images(dir_allOuterFolders, um_per_pixel, radius_in, z_threshold, CLAHE_grid_block_size, use_CLAHE, dir_save):
 
     dir_allOuterFolders = dir_allOuterFolders
     um_per_pixel = um_per_pixel
@@ -18,7 +18,6 @@ def generate_aligned_FOV_images(dir_allOuterFolders, um_per_pixel, radius_in, z_
     CLAHE_grid_block_size = CLAHE_grid_block_size
     use_CLAHE = use_CLAHE
     dir_save = dir_save
-    save_path = save_path
     
     # Find Path to data and import data
     dir_allOuterFolders = dir_allOuterFolders
@@ -140,8 +139,10 @@ def generate_aligned_FOV_images(dir_allOuterFolders, um_per_pixel, radius_in, z_
         # remappingIdx=aligner.remappingIdx_geo,
         normalize=True,
     );
-
-    np.save(save_path, aligner.ims_registered_nonrigid)   # save the aligned image
+    
+    np.save(os.path.join(dir_save, "aligned_img"), aligner.ims_registered_nonrigid)   # save the aligned image
+    aligner.plot_alignment_results_nonrigid();
+    plt.gcf().savefig(os.path.join(dir_save, "alignment_scores"), dpi=300, bbox_inches="tight") # save the alignment scores
 
 
 def process_and_align_suite2p_data(dir_allOuterFolders, um_per_pixel, radius_in, z_threshold, CLAHE_grid_block_size, use_CLAHE, dir_save, save_path):
