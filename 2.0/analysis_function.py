@@ -93,7 +93,7 @@ def generate_aligned_FOV_images(dir_input, um_per_pixel, sessions_to_align, dir_
             all_to_all=False,  ## Force the use of our algorithm for all-pairs matching. Much slower (False: O(N) vs. True: O(N^2)), but more accurate.
             radius_in= 4.0, # IMPORTANT PARAMETER: Value in micrometers used to define the maximum shift/offset between two images that are considered to be aligned. Larger means more lenient alignment.
             radius_out=20,  ## Value in micrometers used to define the minimum shift/offset between two images that are considered to be misaligned.
-            z_threshold= 20, # IMPORTANT PARAMETER: Z-score required to define two images as aligned. Larger values results in more stringent alignment requirements.
+            z_threshold= 10, # IMPORTANT PARAMETER: Z-score required to define two images as aligned. Larger values results in more stringent alignment requirements.
             um_per_pixel=data.um_per_pixel[0],  ## Single value for um_per_pixel. data.um_per_pixel is typically a list of floats, so index out just one value.
             device=DEVICE,
             verbose=False,
@@ -407,3 +407,38 @@ def overlay_images(base_gray, overlay_rgb, alpha=0.6):
 
     blended = (1 - alpha) * base_rgb + alpha * overlay_rgb
     return np.clip(blended, 0, 1)  # Keep in float range [0, 1] for display
+
+def toy_similarity_map():
+    # Create a toy 2D similarity map (cross-correlation-like surface)
+    size = 50
+    x = np.linspace(-25, 25, size)
+    y = np.linspace(-25, 25, size)
+    X, Y = np.meshgrid(x, y)
+    # Simulate a correlation peak at (0, 0)
+    sigma = 5
+    similarity_map = np.exp(-(X**2 + Y**2) / (2 * sigma**2))
+    # Define radii in pixels (for this toy example)
+    radius_in = 4    # "aligned" region
+    radius_out = 20  # "misaligned baseline"
+    # Plot the similarity map
+    fig, ax = plt.subplots(figsize=(4,4))
+    im = ax.imshow(similarity_map, extent=[-25, 25, -25, 25],
+                   origin='lower', cmap="viridis")
+    cbar = plt.colorbar(im, ax=ax)
+    cbar.set_label("Similarity")
+    # Overlay circles for radius_in and radius_out
+    circle_in = plt.Circle((0, 0), radius_in, color='red',
+                           fill=False, linestyle='--', linewidth=2,
+                           label="radius_in")
+    circle_out = plt.Circle((0, 0), radius_out, color='blue',
+                            fill=False, linestyle='--', linewidth=2,
+                            label="radius_out")
+    ax.add_patch(circle_in)
+    ax.add_patch(circle_out)
+    # Axis labels and ticks
+    ax.set_xlabel("Shift X (pixels)")
+    ax.set_ylabel("Shift Y (pixels)")
+    ax.grid(True, linestyle="--", alpha=0.5) # optional grid
+    ax.set_title("Example Similarity Map")
+    ax.legend(loc="upper right")
+    plt.show()
