@@ -19,11 +19,11 @@ def generate_aligned_FOV_images(dir_input, um_per_pixel, sessions_to_align, dir_
     # Find the subfolders for each session
     subfolder_paths = []
     for session in sessions_to_align:
-        path = os.path.join(dir_input, session)
+        path = os.path.join(dir_input, session,'suite2p')
         if os.path.isdir(path):
             subfolder_paths.append(path)
         else:
-            print(f"Session '{session}' doesn't exist.")
+            print(f"Session '{session}' not found.")
     # Find all the .ops and .stat files
     dir_allOuterFolders = subfolder_paths
     pathSuffixToStat = 'stat.npy'
@@ -425,7 +425,7 @@ def toy_similarity_map():
     im = ax.imshow(similarity_map, extent=[-25, 25, -25, 25],
                    origin='lower', cmap="viridis")
     cbar = plt.colorbar(im, ax=ax)
-    cbar.set_label("Similarity")
+    cbar.set_label("Phase-correlation strength")
     # Overlay circles for radius_in and radius_out
     circle_in = plt.Circle((0, 0), radius_in, color='red',
                            fill=False, linestyle='--', linewidth=2,
@@ -439,6 +439,6 @@ def toy_similarity_map():
     ax.set_xlabel("Shift X (pixels)")
     ax.set_ylabel("Shift Y (pixels)")
     ax.grid(True, linestyle="--", alpha=0.5) # optional grid
-    ax.set_title("Example Similarity Map")
+    ax.set_title("Example phase correlation image")
     ax.legend(loc="upper right")
     plt.show()
