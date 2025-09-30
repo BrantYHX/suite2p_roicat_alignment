@@ -93,7 +93,7 @@ def generate_aligned_FOV_images(dir_input, um_per_pixel, sessions_to_align, dir_
             all_to_all=False,  ## Force the use of our algorithm for all-pairs matching. Much slower (False: O(N) vs. True: O(N^2)), but more accurate.
             radius_in= 4.0, # IMPORTANT PARAMETER: Value in micrometers used to define the maximum shift/offset between two images that are considered to be aligned. Larger means more lenient alignment.
             radius_out=20,  ## Value in micrometers used to define the minimum shift/offset between two images that are considered to be misaligned.
-            z_threshold= 10, # IMPORTANT PARAMETER: Z-score required to define two images as aligned. Larger values results in more stringent alignment requirements.
+            z_threshold= 5, # IMPORTANT PARAMETER: Z-score required to define two images as aligned. Larger values results in more stringent alignment requirements.
             um_per_pixel=data.um_per_pixel[0],  ## Single value for um_per_pixel. data.um_per_pixel is typically a list of floats, so index out just one value.
             device=DEVICE,
             verbose=False,
@@ -104,12 +104,12 @@ def generate_aligned_FOV_images(dir_input, um_per_pixel, sessions_to_align, dir_
             normalize_FOV_intensities=True,
             roi_FOV_mixing_factor=0.5,
             use_CLAHE= False,  # IMPORTANT PARAMETER. Use Set to False if data is poor quality or poorly aligned.
-            CLAHE_grid_block_size= 3,  # IMPORTANT PARAMETER. Use smaller values for higher precision but higher chance of failure.
+            CLAHE_grid_block_size= 8,  # IMPORTANT PARAMETER. Use smaller values for higher precision but higher chance of failure.
             CLAHE_clipLimit=1.0,
             CLAHE_normalize=True,
         )
         aligner.fit_geometric(
-            template= 0.5,  ## specifies which image to use as the template. Either array (image), integer (ims_moving index), or float (ims_moving fractional index)
+            template= 2,  ## specifies which image to use as the template. Either array (image), integer (ims_moving index), or float (ims_moving fractional index)
             ims_moving=FOV_images,  ## input images
             template_method='sequential',  ## 'sequential': align images to neighboring images (good for drifting data). 'image': align to a single image
             mask_borders=(0, 0, 0, 0),  ## number of pixels to mask off the edges (top, bottom, left, right)
@@ -117,7 +117,7 @@ def generate_aligned_FOV_images(dir_input, um_per_pixel, sessions_to_align, dir_
             kwargs_method = {
                 'RoMa': {  ## Accuracy: Best, Speed: Very slow (can be fast with a GPU).
                     'model_type': 'outdoor',
-                    'n_points': 10000,  ## Higher values mean more points are used for the registration. Useful for larger FOV_images. Larger means slower.
+                    'n_points': 20000,  ## Higher values mean more points are used for the registration. Useful for larger FOV_images. Larger means slower.
                     'batch_size': 1000,
                 },
                 'DISK_LightGlue': {  ## Accuracy: Good, Speed: Fast.
@@ -151,7 +151,7 @@ def generate_aligned_FOV_images(dir_input, um_per_pixel, sessions_to_align, dir_
         );
 
         aligner.fit_nonrigid(
-            template=0.5,  ## specifies which image to use as the template. Either array (image), integer (ims_moving index), or float (ims_moving fractional index)
+            template= 2,  ## specifies which image to use as the template. Either array (image), integer (ims_moving index), or float (ims_moving fractional index)
             ims_moving=aligner.ims_registered_geo,  ## Input images. Typically the geometrically registered images
             remappingIdx_init=aligner.remappingIdx_geo,  ## The remappingIdx between the original images (and ROIs) and ims_moving
             template_method='image',  ## 'sequential': align images to neighboring images. 'image': align to a single image, good if using geometric registration first
@@ -425,7 +425,7 @@ def toy_similarity_map():
     im = ax.imshow(similarity_map, extent=[-25, 25, -25, 25],
                    origin='lower', cmap="viridis")
     cbar = plt.colorbar(im, ax=ax)
-    cbar.set_label("Phase-correlation strength")
+    cbar.set_label("Similarity")
     # Overlay circles for radius_in and radius_out
     circle_in = plt.Circle((0, 0), radius_in, color='red',
                            fill=False, linestyle='--', linewidth=2,
@@ -439,6 +439,6 @@ def toy_similarity_map():
     ax.set_xlabel("Shift X (pixels)")
     ax.set_ylabel("Shift Y (pixels)")
     ax.grid(True, linestyle="--", alpha=0.5) # optional grid
-    ax.set_title("Example phase correlation image")
+    ax.set_title("Example similarity map")
     ax.legend(loc="upper right")
     plt.show()
