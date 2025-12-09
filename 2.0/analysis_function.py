@@ -109,7 +109,7 @@ def generate_aligned_FOV_images(dir_input, um_per_pixel, sessions_to_align, dir_
             CLAHE_normalize=True,
         )
         aligner.fit_geometric(
-            template= 2,  ## specifies which image to use as the template. Either array (image), integer (ims_moving index), or float (ims_moving fractional index)
+            template= 0.5,  ## specifies which image to use as the template. Either array (image), integer (ims_moving index), or float (ims_moving fractional index)
             ims_moving=FOV_images,  ## input images
             template_method='sequential',  ## 'sequential': align images to neighboring images (good for drifting data). 'image': align to a single image
             mask_borders=(0, 0, 0, 0),  ## number of pixels to mask off the edges (top, bottom, left, right)
