@@ -151,7 +151,7 @@ def generate_aligned_FOV_images(dir_input, um_per_pixel, sessions_to_align, dir_
         );
 
         aligner.fit_nonrigid(
-            template= 2,  ## specifies which image to use as the template. Either array (image), integer (ims_moving index), or float (ims_moving fractional index)
+            template= 0.5,  ## specifies which image to use as the template. Either array (image), integer (ims_moving index), or float (ims_moving fractional index)
             ims_moving=aligner.ims_registered_geo,  ## Input images. Typically the geometrically registered images
             remappingIdx_init=aligner.remappingIdx_geo,  ## The remappingIdx between the original images (and ROIs) and ims_moving
             template_method='image',  ## 'sequential': align images to neighboring images. 'image': align to a single image, good if using geometric registration first
