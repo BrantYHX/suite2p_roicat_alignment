@@ -38,19 +38,21 @@ def generate_aligned_FOV_images(dir_input, um_per_pixel, sessions_to_align, dir_
     all_planes = []
     for path in paths_allOps:
         plane = Path(path).parent.name
-        if plane not in all_planes:
+        if plane not in all_planes and plane != 'combined':
             all_planes.append(plane)
 
     # dictionary that stores all ops and stat files with planes as keys
     ops_dict = defaultdict(list) # the keys are the planes, values are the .ops files
     for path in paths_allOps:
         plane = Path(path).parent.name  # plane0/plane1/plane2...
-        ops_dict[plane].append(path)
+        if plane != 'combined':
+            ops_dict[plane].append(path)
     ops_dict = dict(ops_dict)
     stat_dict = defaultdict(list) # the keys are the planes, values are the .stat files
     for path in paths_allStat:
         plane = Path(path).parent.name  # plane0/plane1/plane2...
-        stat_dict[plane].append(path)
+        if plane != 'combined':
+            stat_dict[plane].append(path)
     stat_dict = dict(stat_dict)
 
     print(f'sessions to align: {sessions_to_align}')
@@ -81,7 +83,7 @@ def generate_aligned_FOV_images(dir_input, um_per_pixel, sessions_to_align, dir_
             paths_opsFiles=ops_dict[plane][:],
             um_per_pixel= um_per_pixel,  ## IMPORTANT PARAMETER. Use a list of floats if values differ in each session.
             new_or_old_suite2p='new',
-            type_meanImg='meanImgE',
+            type_meanImg='meanImg',    #####################  Here meanImg means enhanced!!!! For now I need non-enhanced so.
             verbose=False,
         )
         assert data.check_completeness(verbose=False)['tracking'], f"Data object is missing attributes necessary for tracking."
@@ -179,6 +181,9 @@ def generate_aligned_FOV_images(dir_input, um_per_pixel, sessions_to_align, dir_
             # remappingIdx=aligner.remappingIdx_geo,
             normalize=True,
         );
+
+        np.save(os.path.join(plane_dir, f'aligned_raw_img_{plane}'), data.FOV_images)    
+
         np.save(os.path.join(plane_dir, f'aligned_img_{plane}'), aligner.ims_registered_nonrigid)   # save the aligned image
         aligner.plot_alignment_results_nonrigid();
         plt.gcf().savefig(os.path.join(plane_dir, f'alignment_scores_{plane}'), dpi=300, bbox_inches="tight") # save the alignment scores
